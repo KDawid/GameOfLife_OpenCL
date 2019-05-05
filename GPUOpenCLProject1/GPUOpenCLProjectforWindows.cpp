@@ -140,10 +140,6 @@ struct ocl_args_d_t
     float            compilerVersion;   // hold the device OpenCL C version (default. 1.2)
     
     // Objects that are specific for algorithm implemented in this sample
-    cl_mem           srcA;              // hold first source buffer
-    cl_mem           srcB;              // hold second source buffer
-    cl_mem           dstMem;            // hold destination buffer
-
 	cl_mem           golin;              // hold first source buffer
 	cl_mem           golout;              // hold second source buffer
 };
@@ -157,9 +153,8 @@ ocl_args_d_t::ocl_args_d_t():
         platformVersion(OPENCL_VERSION_1_2),
         deviceVersion(OPENCL_VERSION_1_2),
         compilerVersion(OPENCL_VERSION_1_2),
-        srcA(NULL),
-        srcB(NULL),
-        dstMem(NULL)
+		golin(NULL),
+		golout(NULL)
 {
 }
 
@@ -194,25 +189,17 @@ ocl_args_d_t::~ocl_args_d_t()
             LogError("Error: clReleaseProgram returned '%s'.\n", TranslateOpenCLError(err));
         }
     }
-    if (srcA)
+    if (golin)
     {
-        err = clReleaseMemObject(srcA);
+        err = clReleaseMemObject(golin);
         if (CL_SUCCESS != err)
         {
             LogError("Error: clReleaseMemObject returned '%s'.\n", TranslateOpenCLError(err));
         }
     }
-    if (srcB)
+    if (golout)
     {
-        err = clReleaseMemObject(srcB);
-        if (CL_SUCCESS != err)
-        {
-            LogError("Error: clReleaseMemObject returned '%s'.\n", TranslateOpenCLError(err));
-        }
-    }
-    if (dstMem)
-    {
-        err = clReleaseMemObject(dstMem);
+        err = clReleaseMemObject(golout);
         if (CL_SUCCESS != err)
         {
             LogError("Error: clReleaseMemObject returned '%s'.\n", TranslateOpenCLError(err));
@@ -622,7 +609,7 @@ Finish:
  * Create OpenCL buffers from host memory
  * These buffers will be used later by the OpenCL kernel
  */
-int CreateBufferArguments(ocl_args_d_t *ocl, cl_int* inputA, cl_int* inputB, cl_int* outputC, cl_uint arrayWidth, cl_uint arrayHeight)
+int CreateBufferArguments(ocl_args_d_t *ocl, cl_int* golin, cl_int* golout, cl_uint arrayWidth, cl_uint arrayHeight)
 {
     cl_int err = CL_SUCCESS;
 
@@ -650,24 +637,16 @@ int CreateBufferArguments(ocl_args_d_t *ocl, cl_int* inputA, cl_int* inputB, cl_
     desc.buffer            = NULL;
 #endif
 
-    // Create first image based on host memory inputA
-    ocl->srcA = clCreateImage(ocl->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, inputA, &err);
+    // Create input image based on host memory
+    ocl->golin = clCreateImage(ocl->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, golin, &err);
     if (CL_SUCCESS != err)
     {
         LogError("Error: clCreateImage for srcA returned %s\n", TranslateOpenCLError(err));
         return err;
     }
 
-    // Create second image based on host memory inputB
-    ocl->srcB = clCreateImage(ocl->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, inputB, &err);
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: clCreateImage for srcB returned %s\n", TranslateOpenCLError(err));
-        return err;
-    }
-
-    // Create third (output) image based on host memory outputC
-    ocl->dstMem = clCreateImage(ocl->context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, outputC, &err);
+    // Create the output image based on host memory
+    ocl->golout = clCreateImage(ocl->context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, golout, &err);
     if (CL_SUCCESS != err)
     {
         LogError("Error: clCreateImage for dstMem returned %s\n", TranslateOpenCLError(err));
@@ -706,7 +685,7 @@ int CreateGameOfLifeBufferArguments(ocl_args_d_t *ocl, cl_int* gameOfLifeInput, 
 	desc.buffer = NULL;
 #endif
 
-	// Create first image based on host memory inputA
+	// Create input image based on host memory
 	ocl->golin = clCreateImage(ocl->context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, gameOfLifeInput, &err);
 	if (CL_SUCCESS != err)
 	{
@@ -714,7 +693,7 @@ int CreateGameOfLifeBufferArguments(ocl_args_d_t *ocl, cl_int* gameOfLifeInput, 
 		return err;
 	}
 
-	// Create third (output) image based on host memory outputC
+	// Create output image based on host memory
 	ocl->golout = clCreateImage(ocl->context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, &format, &desc, gameOfLifeOutput, &err);
 	if (CL_SUCCESS != err)
 	{
@@ -732,27 +711,6 @@ int CreateGameOfLifeBufferArguments(ocl_args_d_t *ocl, cl_int* gameOfLifeInput, 
 cl_uint SetKernelArguments(ocl_args_d_t *ocl)
 {
     cl_int err = CL_SUCCESS;
-
-    /*err  =  clSetKernelArg(ocl->kernel, 0, sizeof(cl_mem), (void *)&ocl->srcA);
-    if (CL_SUCCESS != err)
-    {
-        LogError("error: Failed to set argument srcA, returned %s\n", TranslateOpenCLError(err));
-        return err;
-    }
-
-    err  = clSetKernelArg(ocl->kernel, 1, sizeof(cl_mem), (void *)&ocl->srcB);
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: Failed to set argument srcB, returned %s\n", TranslateOpenCLError(err));
-        return err;
-    }
-
-    err  = clSetKernelArg(ocl->kernel, 2, sizeof(cl_mem), (void *)&ocl->dstMem);
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: Failed to set argument dstMem, returned %s\n", TranslateOpenCLError(err));
-        return err;
-    }*/
 
 	err = clSetKernelArg(ocl->kernel, 0, sizeof(cl_mem), (void *)&ocl->golin);
 	if (CL_SUCCESS != err)
@@ -829,58 +787,6 @@ cl_uint ExecuteStepOneGenerationKernel(ocl_args_d_t *ocl, cl_uint width, cl_uint
 	return CL_SUCCESS;
 }
 
-
-/*
- * "Read" the result buffer (mapping the buffer to the host memory address)
- */
-bool ReadAndVerify(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *inputA, cl_int *inputB)
-{
-    cl_int err = CL_SUCCESS;
-    bool result = true;
-
-    // Enqueue a command to map the buffer object (ocl->dstMem) into the host address space and returns a pointer to it
-    // The map operation is blocking
-    size_t origin[] = {0, 0, 0};
-    size_t region[] = {width, height, 1};
-    size_t image_row_pitch;
-    size_t image_slice_pitch;
-    cl_int *resultPtr = (cl_int *)clEnqueueMapImage(ocl->commandQueue, ocl->dstMem, true, CL_MAP_READ, origin, region, &image_row_pitch, &image_slice_pitch, 0, NULL, NULL, &err);
-
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: clEnqueueMapBuffer returned %s\n", TranslateOpenCLError(err));
-        return false;
-    }
-
-    // Call clFinish to guarantee that output region is updated
-    err = clFinish(ocl->commandQueue);
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: clFinish returned %s\n", TranslateOpenCLError(err));
-    }
-
-    // We mapped dstMem to resultPtr, so resultPtr is ready and includes the kernel output !!!
-    // Verify the results
-    unsigned int size = width * height;
-    for (unsigned int k = 0; k < size; ++k)
-    {
-        if (resultPtr[k] != inputA[k] + inputB[k])
-        {
-            LogError("Verification failed at %d: (%d + %d = %d)\n", k, inputA[k], inputB[k], resultPtr[k]);
-            result = false;
-        }
-    }
-
-     // Unmapped the output buffer before releasing it
-    err = clEnqueueUnmapMemObject(ocl->commandQueue, ocl->dstMem, resultPtr, 0, NULL, NULL);
-    if (CL_SUCCESS != err)
-    {
-        LogError("Error: clEnqueueUnmapMemObject returned %s\n", TranslateOpenCLError(err));
-    }
-
-    return result;
-}
-
 bool ReadAndVerifyGoL(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *input)
 {
 	cl_int err = CL_SUCCESS;
@@ -906,18 +812,6 @@ bool ReadAndVerifyGoL(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *
 	{
 		LogError("Error: clFinish returned %s\n", TranslateOpenCLError(err));
 	}
-
-	// We mapped dstMem to resultPtr, so resultPtr is ready and includes the kernel output !!!
-	// Verify the results
-	/*unsigned int size = width * height;
-	for (unsigned int k = 0; k < size; ++k)
-	{
-		if (resultPtr[k] != input[k])
-		{
-			LogError("Verification failed at %d: (%d = %d)\n", k, input[k], resultPtr[k]);
-			result = false;
-		}
-	}*/
 
 	// Unmapped the output buffer before releasing it
 	err = clEnqueueUnmapMemObject(ocl->commandQueue, ocl->golout, resultPtr, 0, NULL, NULL);
@@ -947,8 +841,8 @@ int _tmain(int argc, TCHAR* argv[])
     LARGE_INTEGER performanceCountNDRangeStart;
     LARGE_INTEGER performanceCountNDRangeStop;
 
-    cl_uint arrayWidth  = 1024;
-    cl_uint arrayHeight = 1024;
+	cl_uint gameOfLifeSizeX = 10;
+	cl_uint gameOfLifeSizeY = 10;
 
     //initialize Open CL objects (context, queue, etc.)
     if (CL_SUCCESS != SetupOpenCL(&ocl, deviceType))
@@ -958,34 +852,21 @@ int _tmain(int argc, TCHAR* argv[])
 
     // allocate working buffers. 
     // the buffer should be aligned with 4K page and size should fit 64-byte cached line
-    cl_uint optimizedSize = ((sizeof(cl_int) * arrayWidth * arrayHeight - 1)/64 + 1) * 64;
-    cl_int* inputA  = (cl_int*)_aligned_malloc(optimizedSize, 4096);
-    cl_int* inputB  = (cl_int*)_aligned_malloc(optimizedSize, 4096);
-    cl_int* outputC = (cl_int*)_aligned_malloc(optimizedSize, 4096);
+    cl_uint optimizedSize = ((sizeof(cl_int) * gameOfLifeSizeX * gameOfLifeSizeY - 1)/64 + 1) * 64;
 
 	cl_int* gameOfLifeInput = (cl_int*)_aligned_malloc(optimizedSize, 4096);
 	cl_int* gameOfLifeOutput = (cl_int*)_aligned_malloc(optimizedSize, 4096);
-    if (NULL == inputA || NULL == inputB || NULL == outputC)
+    if (NULL == gameOfLifeInput || NULL == gameOfLifeOutput)
     {
         LogError("Error: _aligned_malloc failed to allocate buffers.\n");
         return -1;
     }
 
     //random input
-    generateInput(inputA, arrayWidth, arrayHeight);
-    generateInput(inputB, arrayWidth, arrayHeight);
-
-	cl_uint gameOfLifeSizeX = 10;
-	cl_uint gameOfLifeSizeY = 10;
 	generateInput(gameOfLifeInput, gameOfLifeSizeX, gameOfLifeSizeY);
 
     // Create OpenCL buffers from host memory
     // These buffers will be used later by the OpenCL kernel
-    if (CL_SUCCESS != CreateBufferArguments(&ocl, inputA, inputB, outputC, arrayWidth, arrayHeight))
-    {
-        return -1;
-    }
-
 	if (CL_SUCCESS != CreateGameOfLifeBufferArguments(&ocl, gameOfLifeInput, gameOfLifeOutput, gameOfLifeSizeX, gameOfLifeSizeY))
 	{
 		return -1;
@@ -1063,7 +944,6 @@ int _tmain(int argc, TCHAR* argv[])
 	printf("Input: \n");
 	for (int i = 0; i < gameOfLifeSizeX; i++) {
 		for (int j = 0; j < gameOfLifeSizeY; j++) {
-			//printf("%i: %i (A) + %i (B) = %i (C)\n", (int)i, (int)inputA[i], (int)inputB[i], (int)outputC[i]);
 			printf("%i", (int)gameOfLifeInput[i*10 + j]);
 		}
 		printf("\n");
@@ -1071,15 +951,11 @@ int _tmain(int argc, TCHAR* argv[])
 	printf("-------------------\nOutput: \n");
 	for (int i = 0; i < gameOfLifeSizeX; i++) {
 		for (int j = 0; j < gameOfLifeSizeY; j++) {
-			//printf("%i: %i (A) + %i (B) = %i (C)\n", (int)i, (int)inputA[i], (int)inputB[i], (int)outputC[i]);
 			printf("%i", (int)gameOfLifeOutput[i * 10 + j]);
 		}
 		printf("\n");
 	}
 
-    _aligned_free(inputA);
-    _aligned_free(inputB);
-    _aligned_free(outputC);
 	_aligned_free(gameOfLifeInput);
 	_aligned_free(gameOfLifeOutput);
 

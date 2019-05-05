@@ -6,14 +6,6 @@
   Device vendor: Intel(R) Corporation
   Device profile: FULL_PROFILE
   
-  Add info:
-  	Maximum work-group size: 256
-  	Compiler work-group size: (0, 0, 0)
-  	Local memory size: 0
-  	Preferred multiple of work-group size: 32
-  	Minimum amount of private memory: 0
-  	Amount of spill memory used by the kernel: 0
-  
   StepOneGeneration info:
   	Maximum work-group size: 256
   	Compiler work-group size: (0, 0, 0)
@@ -25,12 +17,12 @@
   Build succeeded!
   
   GPUOpenCLProjectforWindows.cpp
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(541): warning C4996: 'clCreateCommandQueue': was declared deprecated
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(528): warning C4996: 'clCreateCommandQueue': was declared deprecated
   c:\program files (x86)\intelswtools\opencl\sdk\include\cl\cl.h(1428): note: see declaration of 'clCreateCommandQueue'
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(1064): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(1065): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(1072): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(1073): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(945): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(946): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(952): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(953): warning C4018: '<': signed/unsigned mismatch
   GPUOpenCLProject1.vcxproj -> C:\Users\edvikel\source\repos\GPUOpenCLProject1\Debug\GPUOpenCLProject1.exe
   Template.cl
           1 file(s) copied.
