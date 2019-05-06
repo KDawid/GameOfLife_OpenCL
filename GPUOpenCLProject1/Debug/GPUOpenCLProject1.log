@@ -1,4 +1,5 @@
-﻿  Preprocessing: Template.cl
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (GPUOpenCLProject1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Preprocessing: Template.cl
   Using build options:  -I "C:\Users\edvikel\source\repos\GPUOpenCLProject1\GPUOpenCLProject1"
   Platform name: Intel(R) OpenCL
   Device name: Intel(R) UHD Graphics 620
@@ -16,13 +17,15 @@
   
   Build succeeded!
   
-  GPUOpenCLProjectforWindows.cpp
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(528): warning C4996: 'clCreateCommandQueue': was declared deprecated
+  GameOfLifeOpenCLWindows.cpp
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gameoflifeopenclwindows.cpp(507): warning C4996: 'clCreateCommandQueue': was declared deprecated
   c:\program files (x86)\intelswtools\opencl\sdk\include\cl\cl.h(1428): note: see declaration of 'clCreateCommandQueue'
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(945): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(946): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(952): warning C4018: '<': signed/unsigned mismatch
-c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gpuopenclprojectforwindows.cpp(953): warning C4018: '<': signed/unsigned mismatch
-  GPUOpenCLProject1.vcxproj -> C:\Users\edvikel\source\repos\GPUOpenCLProject1\Debug\GPUOpenCLProject1.exe
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gameoflifeopenclwindows.cpp(808): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gameoflifeopenclwindows.cpp(809): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gameoflifeopenclwindows.cpp(815): warning C4018: '<': signed/unsigned mismatch
+c:\users\edvikel\source\repos\gpuopenclproject1\gpuopenclproject1\gameoflifeopenclwindows.cpp(816): warning C4018: '<': signed/unsigned mismatch
+  utils.cpp
+  Generating Code...
+  GPUOpenCLProject1.vcxproj -> C:\Users\edvikel\source\repos\GPUOpenCLProject1\Debug\GameOfLifeOpenCL.exe
   Template.cl
           1 file(s) copied.

@@ -1,25 +1,3 @@
-/*****************************************************************************
- * Copyright (c) 2013-2016 Intel Corporation
- * All rights reserved.
- *
- * WARRANTY DISCLAIMER
- *
- * THESE MATERIALS ARE PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL INTEL OR ITS
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THESE
- * MATERIALS, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Intel Corporation is the author of the Materials, and requests that all
- * problem reports or change requests be submitted to it directly
- *****************************************************************************/
-
 constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP | CLK_FILTER_NEAREST;
 
 __kernel void StepOneGeneration(read_only image2d_t gameOfLifeInput, write_only image2d_t gameOfLifeOutput)
@@ -27,8 +5,10 @@ __kernel void StepOneGeneration(read_only image2d_t gameOfLifeInput, write_only 
 	const int x = get_global_id(0);
 	const int y = get_global_id(1);
 
+	// Actual cell state
 	uint A = read_imageui(gameOfLifeInput, sampler, (int2)(x, y)).x;
 
+	// Count alive neighbours
 	int sum = 0;
 	for(int i = -1; i <= 1; i++)
 	{
@@ -43,6 +23,7 @@ __kernel void StepOneGeneration(read_only image2d_t gameOfLifeInput, write_only 
 			}
 		}
 	}
+	// Update cell state
 	if(sum == 3 || (A == 1 && sum == 2))
 	{
 		write_imageui(gameOfLifeOutput, (int2)(x, y), 1);
@@ -52,5 +33,4 @@ __kernel void StepOneGeneration(read_only image2d_t gameOfLifeInput, write_only 
 		write_imageui(gameOfLifeOutput, (int2)(x, y), 0);
 	}
 	//printf("(%i, %i) - %i --> %i neighbours\n", x, y, A, sum);
-	
 }

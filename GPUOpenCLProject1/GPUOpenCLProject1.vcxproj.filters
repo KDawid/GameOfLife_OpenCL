@@ -18,7 +18,7 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GPUOpenCLProjectforWindows.cpp">
+    <ClCompile Include="GameOfLifeOpenCLWindows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,7 +26,7 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GPUOpenCLProjectforWindows.h">
+    <ClInclude Include="GameOfLifeOpenCLWindows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

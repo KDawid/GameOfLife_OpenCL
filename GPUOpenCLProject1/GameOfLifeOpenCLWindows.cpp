@@ -1,25 +1,3 @@
-/*****************************************************************************
- * Copyright (c) 2013-2016 Intel Corporation
- * All rights reserved.
- *
- * WARRANTY DISCLAIMER
- *
- * THESE MATERIALS ARE PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL INTEL OR ITS
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
- * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THESE
- * MATERIALS, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Intel Corporation is the author of the Materials, and requests that all
- * problem reports or change requests be submitted to it directly
- *****************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
@@ -31,6 +9,7 @@
 
 //for perf. counters
 #include <Windows.h>
+#include "GameOfLifeOpenCLWindows.h"
 
 
 // Macros for OpenCL versions
@@ -787,7 +766,7 @@ cl_uint ExecuteStepOneGenerationKernel(ocl_args_d_t *ocl, cl_uint width, cl_uint
 	return CL_SUCCESS;
 }
 
-bool ReadAndVerifyGoL(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *input)
+bool ReadGoL(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *input)
 {
 	cl_int err = CL_SUCCESS;
 	bool result = true;
@@ -821,6 +800,24 @@ bool ReadAndVerifyGoL(ocl_args_d_t *ocl, cl_uint width, cl_uint height, cl_int *
 	}
 
 	return result;
+}
+
+void printResult(const cl_uint &gameOfLifeSizeX, const cl_uint &gameOfLifeSizeY, cl_int * gameOfLifeInput, cl_int * gameOfLifeOutput)
+{
+	printf("Input: \n");
+	for (int i = 0; i < gameOfLifeSizeX; i++) {
+		for (int j = 0; j < gameOfLifeSizeY; j++) {
+			printf("%i", (int)gameOfLifeInput[i * 10 + j]);
+		}
+		printf("\n");
+	}
+	printf("-------------------\nOutput: \n");
+	for (int i = 0; i < gameOfLifeSizeX; i++) {
+		for (int j = 0; j < gameOfLifeSizeY; j++) {
+			printf("%i", (int)gameOfLifeOutput[i * 10 + j]);
+		}
+		printf("\n");
+	}
 }
 
 
@@ -914,24 +911,16 @@ int _tmain(int argc, TCHAR* argv[])
     bool queueProfilingEnable = true;
     if (queueProfilingEnable)
         QueryPerformanceCounter(&performanceCountNDRangeStart);
-    // Execute (enqueue) the kernel
-    /*if (CL_SUCCESS != ExecuteAddKernel(&ocl, arrayWidth, arrayHeight))
-    {
-        return -1;
-    }*/
-
+	
 	if (CL_SUCCESS != ExecuteStepOneGenerationKernel(&ocl, gameOfLifeSizeX, gameOfLifeSizeY))
-	{
 		return -1;
-	}
 
     if (queueProfilingEnable)
         QueryPerformanceCounter(&performanceCountNDRangeStop);
 
     // The last part of this function: getting processed results back.
     // use map-unmap sequence to update original memory area with output buffer.
-    //ReadAndVerify(&ocl, arrayWidth, arrayHeight, inputA, inputB);
-	ReadAndVerifyGoL(&ocl, gameOfLifeSizeX, gameOfLifeSizeY, gameOfLifeInput);
+	ReadGoL(&ocl, gameOfLifeSizeX, gameOfLifeSizeY, gameOfLifeInput);
 
     // retrieve performance counter frequency
     if (queueProfilingEnable)
@@ -941,20 +930,7 @@ int _tmain(int argc, TCHAR* argv[])
             1000.0f*(float)(performanceCountNDRangeStop.QuadPart - performanceCountNDRangeStart.QuadPart) / (float)perfFrequency.QuadPart);
     }
 
-	printf("Input: \n");
-	for (int i = 0; i < gameOfLifeSizeX; i++) {
-		for (int j = 0; j < gameOfLifeSizeY; j++) {
-			printf("%i", (int)gameOfLifeInput[i*10 + j]);
-		}
-		printf("\n");
-	}
-	printf("-------------------\nOutput: \n");
-	for (int i = 0; i < gameOfLifeSizeX; i++) {
-		for (int j = 0; j < gameOfLifeSizeY; j++) {
-			printf("%i", (int)gameOfLifeOutput[i * 10 + j]);
-		}
-		printf("\n");
-	}
+	printResult(gameOfLifeSizeX, gameOfLifeSizeY, gameOfLifeInput, gameOfLifeOutput);
 
 	_aligned_free(gameOfLifeInput);
 	_aligned_free(gameOfLifeOutput);
@@ -963,4 +939,6 @@ int _tmain(int argc, TCHAR* argv[])
 
     return 0;
 }
+
+
 
